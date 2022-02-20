@@ -27,4 +27,20 @@ int* edgeDetection(Mat image, float sigma, float low, float high){
     
     // non-Maximum suppression
     // loop through all pixels in the image
+    // according to https://docs.opencv.org/2.4/doc/tutorials/core/how_to_scan_images/how_to_scan_images.html#howtoscanimagesopencv
+    // using classic C pointers is the most efficient
+    
+    int channels = image.channels();
+    int nRows = image.rows;
+    int nCols = image.cols * channels();
+    
+    int i, j, currAngle;
+    uchar* p;
+    for(i = 0; i < nRows; ++i){
+        p = image<ptr>char(i);
+        for(j = 0; j < nCols; ++j){
+            
+        }
+    }
 }
+
