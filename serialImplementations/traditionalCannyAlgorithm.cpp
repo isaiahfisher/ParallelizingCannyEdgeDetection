@@ -18,12 +18,12 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
     // Step 2: Gradient Calculation
     // Apply Sobel filter
     Mat xGradient, yGradient;
-    Sobel(blurred_image, xGradient, CV_64F, 1, 0, ksize=3);
-    Sobel(blurred_image, yGradient, CV_64F, 0, 1, ksize=3);
+    Sobel(blurred_image, xGradient, CV_64F, 1, 0, 3);
+    Sobel(blurred_image, yGradient, CV_64F, 0, 1, 3);
 
     // convert to polar coordinates
     Mat magnitude, angle;
-    cartToPolar(xGradient, yGradient, magnitude, angle, angleInDegrees = true);
+    cartToPolar(xGradient, yGradient, magnitude, angle, true);
     
     // non-Maximum suppression
     // loop through all pixels in the image
@@ -37,9 +37,9 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
     int i, j, currAngle;
     uchar* p;
     for(i = 0; i < nRows; ++i){
-        p = image<ptr>char(i);
+        p = image.ptr<uchar>(i);
         for(j = 0; j < nCols; ++j){
-            int currAngle = angle[p];
+            int currAngle = angle[j][i];
             if(currAngle > 180){
                 currAngle -= 180;
             }
