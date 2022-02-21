@@ -22,7 +22,7 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
     Sobel(blurred_image, yGradient, CV_64F, 0, 1, ksize=3);
 
     // convert to polar coordinates
-    Mat magnitute, angle;
+    Mat magnitude, angle;
     cartToPolar(xGradient, yGradient, magnitude, angle, angleInDegrees = true);
     
     // non-Maximum suppression
@@ -32,7 +32,7 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
     
     int channels = image.channels();
     int nRows = image.rows;
-    int nCols = image.cols * channels();
+    int nCols = image.cols * channels;
     int firstNeighborX, firstNeighborY, secondNeighborX, secondNeighborY = 0;
     int i, j, currAngle;
     uchar* p;
@@ -55,16 +55,49 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
                 secondNeighborX = p + 1;
                 secondNeighborY = j;
             }
+            else if(currAngle > 67.5 && currAngle <= 112.5){
+                firstNeighborX = p - 1;
+                firstNeighborY = j + 1;
+                secondNeighborX = p + 1;
+                secondNeighborY = j - 1;
+            }
+            else if(currAngle > 112.5 && currAngle <= 157.5){
+                firstNeighborX = p;
+                firstNeighborY = j + 1;
+                secondNeighborX = p;
+                secondNeighborY = y - 1;
+            }
+
+            if(firstNeighborX >= 0 && firstNeighborY >= 0){
+                if(nCols > firstNeighborX && nRows > firstNeighborY){
+                    if(magnitude[j, p] < magnitude[firstNeighborX, firstNeighborY]){
+                        magnitude[j, p] = 0;
+                    }
+                    }
+            }
         }
     }
 }
 
 int main(int argc, char* argv[]){
     // read image from disk, using cmd line
-    // parameters
-
+    // parameters, using tutorial parameters for now
+    string image_path = samples::findFile("starry_night.jpg");
+    Mat img = imread(image_path, IMREAD_COLOR);
+    if(img.empty())
+    {
+        std::cout << "Could not read the image: " << image_path << std::endl;
+        return 1;
+    }
+     imshow("Display window", img);
+    int k = waitKey(0); // Wait for a keystroke in the window
+    if(k == 's')
+    {
+        imwrite("starry_night.png", img);
+    }
+    return 0;
     // call Canny's algorithm, and output the 
     // edged image to disk
 
-    return 0;
+    
 }
