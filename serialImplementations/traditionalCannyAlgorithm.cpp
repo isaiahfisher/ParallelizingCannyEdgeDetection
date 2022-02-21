@@ -59,3 +59,12 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
     }
 }
 
+int main(int argc, char* argv[]){
+    // read image from disk, using cmd line
+    // parameters
+
+    // call Canny's algorithm, and output the 
+    // edged image to disk
+
+    return 0;
+}
