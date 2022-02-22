@@ -1,7 +1,8 @@
-all: program
+CC = g++
+PROJECT = traditionalCannyAlgorithm
+SRC = traditionalCannyAlgorithm.cpp
 
-program:
-	g++ traditionalCannyAlgorithm.cpp -o cannycpp
+LIBS = `pkg-config --cflags --libs opencv4`
 
-clean:
-	rm cannycpp
+$(PROJECT) : $(SRC)
+	$(CC) $(SRC) -o $(PROJECT) $(LIBS)

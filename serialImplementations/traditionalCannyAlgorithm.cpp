@@ -1,12 +1,16 @@
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
 using namespace cv;
 using namespace std;
 
-Mat* edgeDetection(Mat image, float sigma, float low, float high){
+int edgeDetection(Mat image, float sigma, float low, float high){
     // Step 1: Gaussian
     // check to make sure we can open the image
+    Mat detectedEdges;
     if(image.empty()){
         cout << "Could not find the image!" << endl;
         return -1;
@@ -24,6 +28,7 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
     // convert to polar coordinates
     Mat magnitude, angle;
     cartToPolar(xGradient, yGradient, magnitude, angle, true);
+    cout << magnitude << endl;
     
     // non-Maximum suppression
     // loop through all pixels in the image
@@ -36,6 +41,7 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
     int firstNeighborX, firstNeighborY, secondNeighborX, secondNeighborY = 0;
     int i, j, currAngle;
     uchar* p;
+    /*
     for(i = 0; i < nRows; ++i){
         p = image.ptr<uchar>(i);
         for(j = 0; j < nCols; ++j){
@@ -76,7 +82,9 @@ Mat* edgeDetection(Mat image, float sigma, float low, float high){
                     }
             }
         }
-    }
+        
+    } */
+    return 0;
 }
 
 int main(int argc, char* argv[]){
@@ -89,7 +97,8 @@ int main(int argc, char* argv[]){
         std::cout << "Could not read the image: " << image_path << std::endl;
         return 1;
     }
-     imshow("Display window", img);
+    edgeDetection(img, 0.0, 0.0, 0.0);
+    imshow("Display window", img);
     int k = waitKey(0); // Wait for a keystroke in the window
     if(k == 's')
     {
