@@ -172,7 +172,7 @@ def edgeDetection(image, sigma, low, high):
     final_magnitude = top_left + top_right + bottom_left + bottom_right
     final_magnitude[final_magnitude > 0] = 255
  
-    return top_left
+    return final_magnitude
 
 
 # read in the image and the sigma value
