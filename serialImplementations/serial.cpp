@@ -3,14 +3,14 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
-#include <iostream> 
+#include <iostream>
 
 using namespace cv;
 using namespace std;
 
 
 //Our canny edge detection implementation
-void EdgeDetection(Mat input, Mat output, int low, int high, int sigma)
+void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
 {
     //declare Mat fields that will hold different image manipulation stages
     Mat imgGrayscale, imgBlurred, xGradient, yGradient, magnitude, angle;
@@ -244,7 +244,7 @@ void EdgeDetection(Mat input, Mat output, int low, int high, int sigma)
     Mat final_magnitude = top_left + top_right + bottom_left + bottom_right;
     for (int i = 0; i < imgBlurred.cols; i++)
     {
-        for(int j = 0; i < imgBlurred.rows; j++)
+        for(int j = 0; j < imgBlurred.rows; j++)
         {
             if (final_magnitude.at<uchar>(j,i) > 0)
             {
@@ -252,7 +252,6 @@ void EdgeDetection(Mat input, Mat output, int low, int high, int sigma)
             }
         }
     }
-
     output = final_magnitude.clone();
 
 }
@@ -284,18 +283,26 @@ int main()
     }
     //let the user know that edge detection has begun
     char sigmaStr[10];
-    sprintf(sigmaStr, "%d", sigma);
+    sprintf(sigmaStr, "%fs", sigma);
     cout << "Detecting lines with a sigma value of: " << sigmaStr << endl;
 
     EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
 
     //CV_WINDOW_AUTOSIZE will fix the window to image size
-    namedWindow("imgOriginal",CV_WINDOW_AUTOSIZE);        
-    namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);
+    //namedWindow("imgOriginal",CV_WINDOW_AUTOSIZE);        
+    //namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);
 
     //Show windows
-    imshow("imgOriginal", imgOriginal);        
-    imshow("imgCanny", imgCanny);
+    //imshow("imgOriginal", imgOriginal);
+    bool check = imwrite("output.jpg", imgCanny);
+    if (check == false) {
+        cout << "Mission - Saving the image, FAILED" << endl;
+  
+        // wait for any key to be pressed
+        cin.get();
+        return -1;
+    }  
+    //imshow("imgCanny", imgCanny);
 
     waitKey(0);
     return 0;
