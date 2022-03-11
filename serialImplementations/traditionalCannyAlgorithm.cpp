@@ -2,8 +2,10 @@
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 #include <string>
 #include <iostream>
+//#include "cvstd.hpp"
 
 using namespace cv;
 using namespace std;
@@ -264,44 +266,69 @@ int main()
     Mat imgCanny; 
 
     //Prompting user input
-    cout << "Please enter an image filename(string): ";
-    string img_addr;
-    cin >> img_addr;
+    //cout << "Please enter an image filename(string): ";
+    //string img_addr;
+    //cin >> img_addr;
     cout << "Please enter a sigma value(double): ";
     double sigma;
     cin >> sigma;
+    //read from the folder containing images
+    std::string folder = "/home/marktrovinger/Projects/ParallelizingCannyEdgeDetection/serialImplementations/images/*.jpg";
+    vector<cv::String> fn;
+    cv::glob(folder, fn, false);
+
+    vector<Mat> images;
+    vector<Mat> output_images;
+    size_t count = fn.size();
 
     //let the user know their selection and open the image
-    cout << "Searching for " + img_addr << endl;
-    imgOriginal = imread(img_addr);
+    //cout << "Searching for " + img_addr << endl;
+    //imgOriginal = imread(img_addr);
+
+    for (size_t i=0; i<count; i++)
+        images.push_back(imread(fn[i]));
 
     //make sure the image exists
-    if (imgOriginal.empty()) 
+    /*if (imgOriginal.empty()) 
     {
         cout << "error: image not read from file\n\n";
         return(0); 
     }
+    */
     //let the user know that edge detection has begun
     char sigmaStr[10];
     sprintf(sigmaStr, "%fs", sigma);
     cout << "Detecting lines with a sigma value of: " << sigmaStr << endl;
 
-    EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
+    for (size_t i=0; i<count; i++){
+        Mat output_image;
+        EdgeDetection(images[i], output_image, 100, 200, sigma);
+        output_images.push_back(output_image);
+    }
+
+    //EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
 
     //CV_WINDOW_AUTOSIZE will fix the window to image size
     //namedWindow("imgOriginal",CV_WINDOW_AUTOSIZE);        
     //namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);
-
+    
+    for (size_t i=0; i<count; i++){
+        cv::String filename = "output_";
+        filename.append(to_string(i));
+        filename.append(".jpg");
+        imwrite(filename, output_images[i]);
+    }
     //Show windows
     //imshow("imgOriginal", imgOriginal);
-    bool check = imwrite("output.jpg", imgCanny);
-    if (check == false) {
+    //bool check = imwrite("output.jpg", imgCanny);
+    /*if (check == false) {
         cout << "Mission - Saving the image, FAILED" << endl;
   
         // wait for any key to be pressed
         cin.get();
         return -1;
     }  
+    */
     //imshow("imgCanny", imgCanny);
 
     waitKey(0);
