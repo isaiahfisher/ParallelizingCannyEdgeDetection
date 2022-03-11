@@ -273,7 +273,7 @@ int main()
     double sigma;
     cin >> sigma;
     //read from the folder containing images
-    std::string folder = "/home/marktrovinger/Projects/ParallelizingCannyEdgeDetection/serialImplementations/images/*.jpg";
+    std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
     vector<cv::String> fn;
     cv::glob(folder, fn, false);
 
