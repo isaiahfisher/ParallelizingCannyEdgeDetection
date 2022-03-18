@@ -1,6 +1,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/core.hpp>
+#include <opencv2/core/cvstd.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include <string>
@@ -340,7 +341,7 @@ int main()
     //namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);
     
     for (size_t i=0; i<count; i++){
-        cv::String filename = "output_";
+        string filename = "output_";
         filename.append(to_string(i));
         filename.append(".jpg");
         imwrite(filename, output_images[i]);
