@@ -28,6 +28,7 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
     cartToPolar(xGradient, yGradient, magnitude, angle, true);
 
     //loop through all pixels in the image
+    #pragma omp parallel for
     for (int i = 0; i < imgBlurred.cols; i++)
     {
         for (int j = 0; j < imgBlurred.rows; j++)
@@ -93,6 +94,7 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
     //Hysteresis thresholding
     //loop through all pixels in the image and discard 0s
     //100 = weak threshold 255 = strong threshhold
+    #pragma omp parallel for
     for (int i = 0; i < imgBlurred.cols; i++)
     {
         for (int j = 0; j < imgBlurred.rows; j++)
@@ -269,9 +271,9 @@ int main()
     //cout << "Please enter an image filename(string): ";
     //string img_addr;
     //cin >> img_addr;
-    cout << "Please enter a sigma value(double): ";
-    double sigma;
-    cin >> sigma;
+    //cout << "Please enter a sigma value(double): ";
+    double sigma = 1.2;
+    //cin >> sigma;
     //read from the folder containing images
     std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
     vector<cv::String> fn;
@@ -299,7 +301,7 @@ int main()
     char sigmaStr[10];
     sprintf(sigmaStr, "%fs", sigma);
     cout << "Detecting lines with a sigma value of: " << sigmaStr << endl;
-
+    
     for (size_t i=0; i<count; i++){
         Mat output_image;
         EdgeDetection(images[i], output_image, 100, 200, sigma);
