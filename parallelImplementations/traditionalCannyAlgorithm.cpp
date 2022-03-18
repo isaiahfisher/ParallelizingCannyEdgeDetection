@@ -5,6 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <iostream>
+#include <mpi.h>
+
 //#include "cvstd.hpp"
 
 using namespace cv;
@@ -112,149 +114,174 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
         }
     }
 
+    Mat image_clone;
+    int size, rank;
+    MPI_Init(0,0);                 // start MPI
+    MPI_Comm_size(MPI_COMM_WORLD, &size);   // get number of ranks
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);   // get rank
     //starting in top left determine if a weak threshold should be kept
     //or discarded
-    Mat top_left = magnitude.clone();
-    for (int i = 0; i < imgBlurred.cols; i++)
+    if (rank == 0)
     {
-        for (int j = 0; j < imgBlurred.rows; j++)
+        image_clone = magnitude.clone();
+        for (int i = 0; i < imgBlurred.cols; i++)
         {
-            if (top_left.at<uchar>(j,i) == 100)
+            for (int j = 0; j < imgBlurred.rows; j++)
             {
-                try
+                if (image_clone.at<uchar>(j,i) == 100)
                 {
-                    if (top_left.at<uchar>(j+1, i) == 255
-                            || top_left.at<uchar>(j-1,i) == 255
-                            || top_left.at<uchar>(j+1, i-1) == 255
-                            || top_left.at<uchar>(j+1, i+1) == 255
-                            || top_left.at<uchar>(j-1, i-1) == 255
-                            || top_left.at<uchar>(j-1, i+1) == 255
-                            || top_left.at<uchar>(j, i-1) == 255
-                            || top_left.at<uchar>(j, i+1) == 255)
+                    try
                     {
-                        top_left.at<uchar>(j,i) = 255;
-                    } else
+                        if (image_clone.at<uchar>(j+1, i) == 255
+                                || image_clone.at<uchar>(j-1,i) == 255
+                                || image_clone.at<uchar>(j+1, i-1) == 255
+                                || image_clone.at<uchar>(j+1, i+1) == 255
+                                || image_clone.at<uchar>(j-1, i-1) == 255
+                                || image_clone.at<uchar>(j-1, i+1) == 255
+                                || image_clone.at<uchar>(j, i-1) == 255
+                                || image_clone.at<uchar>(j, i+1) == 255)
+                        {
+                            image_clone.at<uchar>(j,i) = 255;
+                        } else
+                        {
+                           image_clone.at<uchar>(j,i) = 0;
+                        }
+                    } catch (...) //catches all exceptions
                     {
-                        top_left.at<uchar>(j,i) = 0;
+                        //equivalent to python pass I believe
+                        ;
                     }
-                } catch (...) //catches all exceptions
+                }
+            }
+        }
+    }
+    if (rank == 1)
+    {
+        //starting from top right instead
+        image_clone = magnitude.clone();
+        for (int i = imgBlurred.cols - 1; i > 0; i--)
+        {
+            for (int j = 0; j < imgBlurred.rows - 1; j++)
+            {
+                if (image_clone.at<uchar>(j,i) == 100)
                 {
-                    //equivalent to python pass I believe
-                    ;
+                    try
+                    {
+                        if (image_clone.at<uchar>(j+1, i) == 255
+                                || image_clone.at<uchar>(j-1,i) == 255
+                                || image_clone.at<uchar>(j+1, i-1) == 255
+                                || image_clone.at<uchar>(j+1, i+1) == 255
+                                || image_clone.at<uchar>(j-1, i-1) == 255
+                                || image_clone.at<uchar>(j-1, i+1) == 255
+                                || image_clone.at<uchar>(j, i-1) == 255
+                                || image_clone.at<uchar>(j, i+1) == 255)
+                        {
+                            image_clone.at<uchar>(j,i) = 255;
+                        } else
+                        {
+                            image_clone.at<uchar>(j,i) = 0;
+                        }
+                    } catch (...)
+                    {
+                        ;
+                    }
                 }
             }
         }
     }
 
-    //starting from top right instead
-    Mat top_right = magnitude.clone();
-    for (int i = imgBlurred.cols - 1; i > 0; i--)
+    if (rank == 2)
     {
-        for (int j = 0; j < imgBlurred.rows - 1; j++)
+        //starting from bottom left instead
+        image_clone = magnitude.clone();
+        for (int i = 0; i < imgBlurred.cols - 1; i++)
         {
-            if (top_right.at<uchar>(j,i) == 100)
+            for (int j = imgBlurred.rows - 1; j > 0; j--)
             {
-                try
+                if (image_clone.at<uchar>(j,i) == 100)
                 {
-                    if (top_right.at<uchar>(j+1, i) == 255
-                            || top_right.at<uchar>(j-1,i) == 255
-                            || top_right.at<uchar>(j+1, i-1) == 255
-                            || top_right.at<uchar>(j+1, i+1) == 255
-                            || top_right.at<uchar>(j-1, i-1) == 255
-                            || top_right.at<uchar>(j-1, i+1) == 255
-                            || top_right.at<uchar>(j, i-1) == 255
-                            || top_right.at<uchar>(j, i+1) == 255)
+                    try
                     {
-                        top_right.at<uchar>(j,i) = 255;
-                    } else
+                        if (image_clone.at<uchar>(j+1, i) == 255
+                                || image_clone.at<uchar>(j-1,i) == 255
+                                || image_clone.at<uchar>(j+1, i-1) == 255
+                                || image_clone.at<uchar>(j+1, i+1) == 255
+                                || image_clone.at<uchar>(j-1, i-1) == 255
+                                || image_clone.at<uchar>(j-1, i+1) == 255
+                                || image_clone.at<uchar>(j, i-1) == 255
+                                || image_clone.at<uchar>(j, i+1) == 255)
+                        {
+                            image_clone.at<uchar>(j,i) = 255;
+                        } else
+                        {
+                            image_clone.at<uchar>(j,i) = 0;
+                        }
+                    } catch (...)
                     {
-                        top_right.at<uchar>(j,i) = 0;
+                        ;
                     }
-                } catch (...)
-                {
-                    ;
                 }
             }
         }
     }
 
-    //starting from bottom left instead
-    Mat bottom_left = magnitude.clone();
-    for (int i = 0; i < imgBlurred.cols - 1; i++)
+    if (rank==3)
     {
-        for (int j = imgBlurred.rows - 1; j > 0; j--)
+        //starting from bottom right instead
+        image_clone = magnitude.clone();
+        for (int i = imgBlurred.cols - 1; i > 0; i--)
         {
-            if (bottom_left.at<uchar>(j,i) == 100)
+            for (int j = imgBlurred.rows - 1; j > 0; j--)
             {
-                try
+                if (image_clone.at<uchar>(j,i) == 100)
                 {
-                    if (bottom_left.at<uchar>(j+1, i) == 255
-                            || bottom_left.at<uchar>(j-1,i) == 255
-                            || bottom_left.at<uchar>(j+1, i-1) == 255
-                            || bottom_left.at<uchar>(j+1, i+1) == 255
-                            || bottom_left.at<uchar>(j-1, i-1) == 255
-                            || bottom_left.at<uchar>(j-1, i+1) == 255
-                            || bottom_left.at<uchar>(j, i-1) == 255
-                            || bottom_left.at<uchar>(j, i+1) == 255)
+                    try
                     {
-                        bottom_left.at<uchar>(j,i) = 255;
-                    } else
+                        if ((int)image_clone.at<uchar>(j+1, i) == 255
+                                ||(int)image_clone.at<uchar>(j-1,i) == 255
+                                ||(int)image_clone.at<uchar>(j+1, i-1) == 255
+                                ||(int)image_clone.at<uchar>(j+1, i+1) == 255
+                                ||(int)image_clone.at<uchar>(j-1, i-1) == 255
+                                ||(int)image_clone.at<uchar>(j-1, i+1) == 255
+                                ||(int)image_clone.at<uchar>(j, i-1) == 255
+                                ||(int)image_clone.at<uchar>(j, i+1) == 255)
+                        {
+                            image_clone.at<uchar>(j,i) = 255;
+                        } else
+                        {
+                            image_clone.at<uchar>(j,i) = 0;
+                        }
+                    } catch (...)
                     {
-                        bottom_left.at<uchar>(j,i) = 0;
+                        ;
                     }
-                } catch (...)
-                {
-                    ;
-                }
-            }
-        }
-    }
-
-    //starting from bottom right instead
-    Mat bottom_right = magnitude.clone();
-    for (int i = imgBlurred.cols - 1; i > 0; i--)
-    {
-        for (int j = imgBlurred.rows - 1; j > 0; j--)
-        {
-            if (bottom_right.at<uchar>(j,i) == 100)
-            {
-                try
-                {
-                    if ((int)bottom_right.at<uchar>(j+1, i) == 255
-                            ||(int)bottom_right.at<uchar>(j-1,i) == 255
-                            ||(int)bottom_right.at<uchar>(j+1, i-1) == 255
-                            ||(int)bottom_right.at<uchar>(j+1, i+1) == 255
-                            ||(int)bottom_right.at<uchar>(j-1, i-1) == 255
-                            ||(int)bottom_right.at<uchar>(j-1, i+1) == 255
-                            ||(int)bottom_right.at<uchar>(j, i-1) == 255
-                            ||(int)bottom_right.at<uchar>(j, i+1) == 255)
-                    {
-                        bottom_right.at<uchar>(j,i) = 255;
-                    } else
-                    {
-                        bottom_right.at<uchar>(j,i) = 0;
-                    }
-                } catch (...)
-                {
-                    ;
                 }
             }
         }
     }
 
     //combine all versions and make all edges value 255
-    Mat final_magnitude = top_left + top_right + bottom_left + bottom_right;
-    for (int i = 0; i < imgBlurred.cols; i++)
+    uchar* final_magnitude[imgBlurred.rows*imgBlurred.cols*magnitude.channels()];
+    uchar* image_clone_array = image_clone.data;
+    MPI_Reduce(image_clone_array, final_magnitude, imgBlurred.cols*imgBlurred.rows, MPI_UNSIGNED_CHAR, MPI_SUM, 0, MPI_COMM_WORLD);
+    
+    Mat final_magnitude_mat(imgBlurred.rows, imgBlurred.cols, magnitude.channels(), final_magnitude);
+
+    if (rank == 0)
     {
-        for(int j = 0; j < imgBlurred.rows; j++)
+        for (int i = 0; i < imgBlurred.cols; i++)
         {
-            if (final_magnitude.at<uchar>(j,i) > 0)
+            for(int j = 0; j < imgBlurred.rows; j++)
             {
-               final_magnitude.at<uchar>(j,i) = 255;
+                if (final_magnitude_mat.at<uchar>(j,i) > 0)
+                {
+                    final_magnitude_mat.at<uchar>(j,i) = 255;
+                }
             }
         }
+        output = final_magnitude_mat.clone();
     }
-    output = final_magnitude.clone();
+    MPI_Finalize();
 
 }
 
