@@ -13,7 +13,7 @@ using namespace std;
 
 
 //Our canny edge detection implementation
-void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
+void EdgeDetection(Mat input, Mat &output, int low, int high, double sigma)
 {
     //declare Mat fields that will hold different image manipulation stages
     Mat imgGrayscale, imgBlurred, xGradient, yGradient, magnitude, angle;
@@ -29,7 +29,6 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
     cartToPolar(xGradient, yGradient, magnitude, angle, true);
 
     //loop through all pixels in the image
-    #pragma omp parallel for
     for (int i = 0; i < imgBlurred.cols; i++)
     {
         for (int j = 0; j < imgBlurred.rows; j++)
@@ -95,7 +94,6 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
     //Hysteresis thresholding
     //loop through all pixels in the image and discard 0s
     //100 = weak threshold 255 = strong threshhold
-    #pragma omp parallel for
     for (int i = 0; i < imgBlurred.cols; i++)
     {
         for (int j = 0; j < imgBlurred.rows; j++)
