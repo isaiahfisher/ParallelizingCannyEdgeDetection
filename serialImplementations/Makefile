@@ -2,7 +2,9 @@ CC = g++
 CFLAGS = -O0 -fopenmp
 PROJECT = traditionalCannyAlgorithm
 PROJECT_SERIAL = traditionalCannyAlgorithm_serial
+PROJECT_SERIAL_REFERENCE = openCVCannyImplementation
 SRC = traditionalCannyAlgorithm.cpp
+SRC_REF = openCVCannyImplementation.cpp
 
 LIBS = `pkg-config --cflags --libs opencv4`
 
@@ -16,3 +18,6 @@ serial:
 
 parallel:
 	$(CC) $(CFLAGS) $(SRC) -o $(PROJECT) $(LIBS)
+
+serial_reference:
+	$(CC) $(SRC_REF) -o $(PROJECT_SERIAL_REFERENCE) $(LIBS)

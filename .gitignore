@@ -33,3 +33,6 @@
 
 # Mac stuff
 .DS_Store
+
+# Images
+*.jpg
