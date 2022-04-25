@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <iostream>
+#include <chrono>
 //#include "cvstd.hpp"
 
 using namespace cv;
@@ -267,13 +268,8 @@ int main()
     Mat imgOriginal; 
     Mat imgCanny; 
 
-    //Prompting user input
-    //cout << "Please enter an image filename(string): ";
-    //string img_addr;
-    //cin >> img_addr;
-    //cout << "Please enter a sigma value(double): ";
     double sigma = 1.2;
-    //cin >> sigma;
+    
     //read from the folder containing images
     std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
     vector<cv::String> fn;
@@ -282,10 +278,6 @@ int main()
     vector<Mat> images;
     vector<Mat> output_images;
     size_t count = fn.size();
-
-    //let the user know their selection and open the image
-    //cout << "Searching for " + img_addr << endl;
-    //imgOriginal = imread(img_addr);
 
     for (size_t i=0; i<count; i++)
         images.push_back(imread(fn[i]));
@@ -302,11 +294,17 @@ int main()
     sprintf(sigmaStr, "%fs", sigma);
     cout << "Detecting lines with a sigma value of: " << sigmaStr << endl;
     
+    // start timing here
+    auto startTime = std::chrono::high_resolution_clock::now();
     for (size_t i=0; i<count; i++){
         Mat output_image;
         EdgeDetection(images[i], output_image, 100, 200, sigma);
         output_images.push_back(output_image);
     }
+    auto stopTime = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
+    std::cout << "Elapsed time for our serial implementation: " << elapsed_seconds.count() << "s\n";
 
     //EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
 
