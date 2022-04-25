@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <iostream>
+#include <omp.h>
 //#include "cvstd.hpp"
 
 using namespace cv;
@@ -266,15 +267,7 @@ int main()
     //variables to hold various image states during the edge detection process
     Mat imgOriginal; 
     Mat imgCanny; 
-
-    //Prompting user input
-    //cout << "Please enter an image filename(string): ";
-    //string img_addr;
-    //cin >> img_addr;
-    //cout << "Please enter a sigma value(double): ";
     double sigma = 1.2;
-    //cin >> sigma;
-    //read from the folder containing images
     std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
     vector<cv::String> fn;
     cv::glob(folder, fn, false);
@@ -283,20 +276,9 @@ int main()
     vector<Mat> output_images;
     size_t count = fn.size();
 
-    //let the user know their selection and open the image
-    //cout << "Searching for " + img_addr << endl;
-    //imgOriginal = imread(img_addr);
-
     for (size_t i=0; i<count; i++)
         images.push_back(imread(fn[i]));
 
-    //make sure the image exists
-    /*if (imgOriginal.empty()) 
-    {
-        cout << "error: image not read from file\n\n";
-        return(0); 
-    }
-    */
     //let the user know that edge detection has begun
     char sigmaStr[10];
     sprintf(sigmaStr, "%fs", sigma);
