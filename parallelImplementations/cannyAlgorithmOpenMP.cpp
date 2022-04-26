@@ -29,7 +29,6 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
     cartToPolar(xGradient, yGradient, magnitude, angle, true);
 
     //loop through all pixels in the image
-    #pragma omp parallel for
     for (int i = 0; i < imgBlurred.cols; i++)
     {
         for (int j = 0; j < imgBlurred.rows; j++)
@@ -95,7 +94,6 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
     //Hysteresis thresholding
     //loop through all pixels in the image and discard 0s
     //100 = weak threshold 255 = strong threshhold
-    #pragma omp parallel for
     for (int i = 0; i < imgBlurred.cols; i++)
     {
         for (int j = 0; j < imgBlurred.rows; j++)
@@ -284,10 +282,14 @@ int main()
     sprintf(sigmaStr, "%fs", sigma);
     cout << "Detecting lines with a sigma value of: " << sigmaStr << endl;
     
-    for (size_t i=0; i<count; i++){
-        Mat output_image;
-        EdgeDetection(images[i], output_image, 100, 200, sigma);
-        output_images.push_back(output_image);
+    #pragma omp parallel
+    {
+        #pragma omp for
+        for (size_t i=0; i<count; i++){
+            Mat output_image;
+            EdgeDetection(images[i], output_image, 100, 200, sigma);
+            output_images.push_back(output_image);
+        }
     }
 
     //EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
