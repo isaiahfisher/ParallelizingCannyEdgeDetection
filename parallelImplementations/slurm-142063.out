@@ -1,0 +1,6 @@
+Detecting lines with a sigma value of: 1.200000s
+/var/spool/slurm/job142063/slurm_script: line 10: 13693 Segmentation fault      ./cannyAlgorithmOpenMP
+Detecting lines with a sigma value of: 1.200000s
+/var/spool/slurm/job142063/slurm_script: line 13: 14738 Segmentation fault      ./cannyAlgorithmOpenMP
+Detecting lines with a sigma value of: 1.200000s
+/var/spool/slurm/job142063/slurm_script: line 16: 15619 Segmentation fault      ./cannyAlgorithmOpenMP

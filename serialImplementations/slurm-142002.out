@@ -1,0 +1,3 @@
+Detecting lines with a sigma value of: 1.200000s
+Elapsed time for our serial implementation: 372.648s
+Testing on 250 4k images.

@@ -1,0 +1,9 @@
+Detecting lines with a sigma value of: 1.200000s
+Elapsed time for our OpenMP implementation: 163.068s
+Testing on 250 4k images.
+Detecting lines with a sigma value of: 1.200000s
+Elapsed time for our OpenMP implementation: 159.563s
+Testing on 250 4k images.
+Detecting lines with a sigma value of: 1.200000s
+Elapsed time for our OpenMP implementation: 172.066s
+Testing on 250 4k images.
