@@ -6,8 +6,10 @@ CFLAGS_SCHOLAR_PARALLEL = -std=c++11 -qopenmp
 PROJECT = traditionalCannyAlgorithm
 PROJECT_SERIAL = traditionalCannyAlgorithm_serial
 PROJECT_SERIAL_REFERENCE = openCVCannyImplementation
+PROJECT_OPENMP = cannyAlgorithmOpenMP
 SRC = traditionalCannyAlgorithm.cpp
 SRC_REF = openCVCannyImplementation.cpp
+SRC_OPENMP = cannyAlgorithmOpenMP.cpp
 
 LIBS = `pkg-config --cflags --libs opencv`
 
@@ -27,3 +29,6 @@ parallel:
 
 serial_reference:
 	$(CC) $(SRC_REF) -o $(PROJECT_SERIAL_REFERENCE) $(LIBS)
+
+openmp_scholar:
+	$(CC_SCHOLAR) $(CFLAGS_SCHOLAR_PARALLEL) $(SRC_OPENMP) -o $(PROJECT_OPENMP) $(LIBS)

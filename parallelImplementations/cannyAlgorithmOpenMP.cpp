@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <omp.h>
+#include <chrono>
 //#include "cvstd.hpp"
 
 using namespace cv;
@@ -27,6 +28,8 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
 
     //grab polar coordinates from the gradients
     cartToPolar(xGradient, yGradient, magnitude, angle, true);
+
+    int numThreads = 0;
 
     //loop through all pixels in the image
     #pragma omp parallel for
@@ -95,25 +98,32 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, int sigma)
     //Hysteresis thresholding
     //loop through all pixels in the image and discard 0s
     //100 = weak threshold 255 = strong threshhold
-    #pragma omp parallel for
-    for (int i = 0; i < imgBlurred.cols; i++)
+    #pragma omp parallel 
     {
-        for (int j = 0; j < imgBlurred.rows; j++)
+        int j = 0;
+        numThreads =  omp_get_num_threads();
+        #pragma omp for 
+        for (int i = 0; i < imgBlurred.cols; i++)
         {
-            uchar currMagnitude = magnitude.at<uchar>(j,i);
+            for (j = 0; j < imgBlurred.rows; j++)
+            {
+                uchar currMagnitude = magnitude.at<uchar>(j,i);
 
-            if (currMagnitude < low)
-            {
-                magnitude.at<uchar>(j,i) = 0;
-            } else if (currMagnitude >=100 && currMagnitude < high)
-            {
-                magnitude.at<uchar>(j,i) = 100;
-            } else
-            {
-                magnitude.at<uchar>(j,i) = 255;
+                if (currMagnitude < low)
+                {
+                    magnitude.at<uchar>(j,i) = 0;
+                } else if (currMagnitude >=100 && currMagnitude < high)
+                {
+                    magnitude.at<uchar>(j,i) = 100;
+                } else
+                {
+                    magnitude.at<uchar>(j,i) = 255;
+                }
             }
         }
     }
+
+    //std::cout << "Using " << numThreads << " threads!" << std::endl;
 
     //starting in top left determine if a weak threshold should be kept
     //or discarded
@@ -268,13 +278,15 @@ int main()
     Mat imgOriginal; 
     Mat imgCanny; 
     double sigma = 1.2;
-    std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
+    //std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
+    std::string ScholarFolder = "/home/mtroving/HPC/images";
     vector<cv::String> fn;
-    cv::glob(folder, fn, false);
+    cv::glob(ScholarFolder, fn, false);
 
     vector<Mat> images;
     vector<Mat> output_images;
     size_t count = fn.size();
+    size_t testing_count = 300;
 
     for (size_t i=0; i<count; i++)
         images.push_back(imread(fn[i]));
@@ -284,11 +296,17 @@ int main()
     sprintf(sigmaStr, "%fs", sigma);
     cout << "Detecting lines with a sigma value of: " << sigmaStr << endl;
     
+    auto startTime = std::chrono::high_resolution_clock::now();
     for (size_t i=0; i<count; i++){
         Mat output_image;
         EdgeDetection(images[i], output_image, 100, 200, sigma);
         output_images.push_back(output_image);
     }
+    auto stopTime = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
+    std::cout << "Elapsed time for our OpenMP implementation: " << elapsed_seconds.count() << "s\n";
+    std::cout << "Testing on " << count << " 4k images." << std::endl;
 
     //EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
 
@@ -296,12 +314,14 @@ int main()
     //namedWindow("imgOriginal",CV_WINDOW_AUTOSIZE);        
     //namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);
     
+    /*
     for (size_t i=0; i<count; i++){
         cv::String filename = "output_";
         filename.append(to_string(i));
         filename.append(".jpg");
         imwrite(filename, output_images[i]);
     }
+    */
     //Show windows
     //imshow("imgOriginal", imgOriginal);
     //bool check = imwrite("output.jpg", imgCanny);

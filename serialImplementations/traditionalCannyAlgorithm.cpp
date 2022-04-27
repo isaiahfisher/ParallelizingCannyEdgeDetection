@@ -269,13 +269,15 @@ int main()
     double sigma = 1.2;
     
     //read from the folder containing images
-    std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
-    vector<cv::String> fn;
-    cv::glob(folder, fn, false);
+    //std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
+    std::string ScholarFolder = "/home/mtroving/HPC/images";
+    std::vector<cv::String> fn;
+    cv::glob(ScholarFolder, fn, false);
 
     vector<Mat> images;
     vector<Mat> output_images;
     size_t count = fn.size();
+    size_t testing_count = 300;
 
     for (size_t i=0; i<count; i++)
         images.push_back(imread(fn[i]));
@@ -303,6 +305,7 @@ int main()
 
     std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
     std::cout << "Elapsed time for our serial implementation: " << elapsed_seconds.count() << "s\n";
+    std::cout << "Testing on " << count << " 4k images." << std::endl;
 
     //EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
 
@@ -310,12 +313,14 @@ int main()
     //namedWindow("imgOriginal",CV_WINDOW_AUTOSIZE);        
     //namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);
     
+    /*
     for (size_t i=0; i<count; i++){
-        cv::String filename = "output_";
+        std::string filename = "output_";
         filename.append(to_string(i));
         filename.append(".jpg");
         imwrite(filename, output_images[i]);
     }
+    */
     //Show windows
     //imshow("imgOriginal", imgOriginal);
     //bool check = imwrite("output.jpg", imgCanny);
