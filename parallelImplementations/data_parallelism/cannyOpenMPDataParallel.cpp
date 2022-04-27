@@ -14,10 +14,10 @@ using namespace std;
 
 
 //Our canny edge detection implementation
-void EdgeDetection(Mat input, Mat &output, int low, int high, double sigma)
+cv::Mat EdgeDetection(Mat input, int low, int high, double sigma)
 {
     //declare Mat fields that will hold different image manipulation stages
-    Mat imgGrayscale, imgBlurred, xGradient, yGradient, magnitude, angle;
+    Mat imgGrayscale, imgBlurred, xGradient, yGradient, magnitude, angle, output;
     
     //get the grayscale image then blur it using a 5 x 5 gaussian kernal
     cvtColor(input, imgGrayscale,CV_BGR2GRAY);
@@ -257,7 +257,7 @@ void EdgeDetection(Mat input, Mat &output, int low, int high, double sigma)
         }
     }
     output = final_magnitude.clone();
-
+    return output;
 }
 
 int main()
@@ -268,6 +268,7 @@ int main()
     Mat imgCanny; 
 
     double sigma = 1.2;
+    int num_threads = 0;
     
     //read from the folder containing images
     //std::string folder = "/media/marktrovinger/Datasets/seg_train/*.jpg";
@@ -299,18 +300,20 @@ int main()
     auto startTime = std::chrono::high_resolution_clock::now();
     #pragma omp parallel
     {
-        #pragma omp for
+        num_threads = omp_get_num_threads();
+        Mat output_image;
+        #pragma omp for private(output_image)
         for (size_t i=0; i<testing_count; i++){
-            Mat output_image;
-            EdgeDetection(images[i], output_image, 100, 200, sigma);
-            output_images.push_back(output_image);
+            EdgeDetection(images[i], 100, 200, sigma);
+            //output_images.push_back(output_image);
         }
     }
     auto stopTime = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> elapsed_seconds = stopTime-startTime;
-    std::cout << "Elapsed time for our serial implementation: " << elapsed_seconds.count() << "s\n";
+    std::cout << "Elapsed time for our data parallelism implementation: " << elapsed_seconds.count() << "s\n";
     std::cout << "Testing on " << testing_count << " 4k images." << std::endl;
+    std::cout << "Using " << num_threads << " threads." << std::endl;
 
     //EdgeDetection(imgOriginal, imgCanny, 100, 200, sigma);
 
