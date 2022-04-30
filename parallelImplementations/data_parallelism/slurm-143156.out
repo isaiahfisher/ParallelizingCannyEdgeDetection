@@ -1,0 +1,8 @@
+Detecting lines with a sigma value of: 1.200000s
+/var/spool/slurm/job143156/slurm_script: line 10: 40814 Segmentation fault      ./cannyOpenMPDataParallel
+Detecting lines with a sigma value of: 1.200000s
+/var/spool/slurm/job143156/slurm_script: line 13: 40958 Segmentation fault      ./cannyOpenMPDataParallel
+Detecting lines with a sigma value of: 1.200000s
+Elapsed time for our data parallelism implementation: 7.791s
+Testing on 100 4k images.
+Using 32 threads.

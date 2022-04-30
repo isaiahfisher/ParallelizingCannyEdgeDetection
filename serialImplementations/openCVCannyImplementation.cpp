@@ -58,13 +58,14 @@ int main()
     //CV_WINDOW_AUTOSIZE will fix the window to image size
     //namedWindow("imgOriginal",CV_WINDOW_AUTOSIZE);        
     //namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);
-    
+    /*
     for (size_t i=0; i<count; i++){
         cv::String filename = "output_";
         filename.append(std::to_string(i));
         filename.append(".jpg");
         imwrite(filename, output_images[i]);
     }
+    */
     //Show windows
     //imshow("imgOriginal", imgOriginal);
     //bool check = imwrite("output.jpg", imgCanny);

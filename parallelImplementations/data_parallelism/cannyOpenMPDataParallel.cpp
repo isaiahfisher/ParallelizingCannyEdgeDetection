@@ -279,7 +279,7 @@ int main()
     vector<Mat> images;
     vector<Mat> output_images;
     size_t count = fn.size();
-    size_t testing_count = 50;
+    size_t testing_count = 150;
 
     for (size_t i=0; i<testing_count; i++)
         images.push_back(imread(fn[i]));
