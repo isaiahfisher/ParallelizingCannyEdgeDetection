@@ -1,3 +1,12 @@
+/*
+* CS 590 - High Performance Computing
+* Term Project - Parallelizing Canny Edge Detection
+* 
+* Isiah Fisher, Mark Trovinger, Omer Yurdabakan
+*
+* canny_par.cpp - Edge Detection using MPI.
+*/
+
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/core.hpp>
@@ -17,7 +26,14 @@
 using namespace cv;
 using namespace std;
 
-// Our canny edge detection implementation
+/* 
+*   Function for detecting edges in input images.
+*
+*   @param path - Path to input file
+*   @param endwith - output image suffix
+*   @param rank - used for MPI
+*   @param size - used for MPI
+*/
 void EdgeDetection(string path, int endwith, int &rank, int &size)
 {
     

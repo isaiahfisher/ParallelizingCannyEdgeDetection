@@ -1,3 +1,12 @@
+/*
+* CS 590 - High Performance Computing
+* Term Project - Parallelizing Canny Edge Detection
+* 
+* Isiah Fisher, Mark Trovinger, Omer Yurdabakan
+*
+*  cannyOpenMPDataParallel.cpp - Experiments using data parallelism instead of algorithmic 
+*                                parallelism.
+*/
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/core.hpp>
@@ -13,7 +22,16 @@ using namespace cv;
 using namespace std;
 
 
-//Our canny edge detection implementation
+
+/* 
+*   Function for detecting edges in input images.
+*
+*   @param input - Input image in cv::Mat format
+*   @param low - low threshold for hysterisis
+*   @param high - high threshold for same
+*   @param sigma - sigma value for Gaussian Blur
+*   @return output - image after edge detection
+*/
 cv::Mat EdgeDetection(Mat input, int low, int high, double sigma)
 {
     //declare Mat fields that will hold different image manipulation stages
@@ -284,13 +302,6 @@ int main()
     for (size_t i=0; i<testing_count; i++)
         images.push_back(imread(fn[i]));
 
-    //make sure the image exists
-    /*if (imgOriginal.empty()) 
-    {
-        cout << "error: image not read from file\n\n";
-        return(0); 
-    }
-    */
     //let the user know that edge detection has begun
     char sigmaStr[10];
     sprintf(sigmaStr, "%fs", sigma);
